@@ -5,7 +5,8 @@ python-dotenv
 mysql-connector-python
 # pymysql
 redshift_connector
-
-
-
+seaborn
+matplotlib
+catboost
+xgboost
 #-e .
