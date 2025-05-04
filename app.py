@@ -5,7 +5,12 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from src.mlproject_001.pipelines.prediction_pipeline import customData, predictPipeline
 
+from src.mlproject_001.logger import logging
+
+
 app = Flask(__name__)
+
+logging.info("Flask app started")
 
 # Route for a home page
 @app.route("/")
@@ -33,6 +38,8 @@ def predict_data():
         predict_pipeline = predictPipeline()
         result = predict_pipeline.predict(pred_df)
 
+        logging.info("Predictions returned to web-page")
+        
         return render_template("home.html", result=result[0])
 
 

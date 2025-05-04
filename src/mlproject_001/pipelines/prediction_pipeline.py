@@ -3,6 +3,7 @@ import os
 import pandas as pd
 
 from src.mlproject_001.exception import CustomException
+from src.mlproject_001.logger import logging
 from src.mlproject_001.utils import load_object
 
 
@@ -20,6 +21,8 @@ class predictPipeline:
 
             data_scaled = preprocessor.transform(features)
             pred = model.predict(data_scaled)
+
+            logging.info("Predictions done from input data")
             return pred
         
         except Exception as e:
@@ -62,6 +65,8 @@ class customData:
                 "reading score": [self.reading_score],
                 "writing score": [self.writing_score],
             }
+
+            logging.info("Input data transformed into dataframe")
 
             return pd.DataFrame(custom_data_input_dict)
 
