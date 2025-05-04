@@ -39,8 +39,8 @@ def predict_data():
         result = predict_pipeline.predict(pred_df)
 
         logging.info("Predictions returned to web-page")
-        
-        return render_template("home.html", result=result[0])
+
+        return render_template("home.html", result=round(result[0], 2))
 
 
 if __name__=="__main__":
