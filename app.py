@@ -1,27 +1,40 @@
-import sys
-from src.mlproject_001.logger import logging
-from src.mlproject_001.exception import CustomException
-from src.mlproject_001.components.data_ingestion import dataIngestion
-from src.mlproject_001.components.data_transformation import dataTransformationConfig, dataTransformation
-from src.mlproject_001.components.model_trainer import modelTrainerConfig, modelTrainer
+from flask import Flask, request, render_template
+import numpy as np
+import pandas as pd
+
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from src.mlproject_001.pipelines.prediction_pipeline import customData, predictPipeline
+
+app = Flask(__name__)
+
+# Route for a home page
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/predict", methods=["GET", "POST"])
+def predict_data():
+    if request.method=="GET":
+        return render_template("home.html")
+    else:
+        data = customData(
+            gender=request.form.get('gender'),
+            race_ethnicity=request.form.get('ethnicity'),
+            parental_level_of_education=request.form.get('parental_level_of_education'),
+            lunch=request.form.get('lunch'),
+            test_preparation_course=request.form.get('test_preparation_course'),
+            reading_score=float(request.form.get('writing_score')),
+            writing_score=float(request.form.get('reading_score'))
+        )
+
+        pred_df = data.get_data_as_dataframe()
+        print(pred_df)
+
+        predict_pipeline = predictPipeline()
+        result = predict_pipeline.predict(pred_df)
+
+        return render_template("home.html", result=result[0])
+
 
 if __name__=="__main__":
-    logging.info("The execution has started")
-
-    try:
-        # data_ingestion_config = dataIngestionConfig()
-        data_ingestion = dataIngestion()
-        train_data_path, test_data_path = data_ingestion.initiate_data_ingestion()
-        
-        # data transformation
-        data_transformation = dataTransformation()
-        train_arr, test_arr, _ = data_transformation.initiate_data_transformation(train_data_path, test_data_path)
-
-        # model training
-        model_trainer = modelTrainer()
-        model_r2_score = model_trainer.initiate_model_trainer(train_arr, test_arr)
-        print(model_r2_score)
-
-    except Exception as e:
-        logging.info("Custom Exception raised")
-        raise CustomException(e, sys)
+    app.run(host="0.0.0.0", debug=True)
